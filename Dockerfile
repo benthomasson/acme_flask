@@ -1,8 +1,12 @@
 FROM registry.access.redhat.com/ubi8/python-39
-USER 1001
+USER 0
 COPY requirements.txt /opt/app-root/src/
 RUN pip install -r /opt/app-root/src/requirements.txt
 COPY forwarder.py /opt/app-root/src/
+COPY acme_tiny.py /opt/app-root/src/
+COPY entrypoint.sh /opt/app-root/src/
+RUN chmod +x entrypoint.sh
 EXPOSE 80
+EXPOSE 443
 WORKDIR /opt/app-root/src/
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80",  "-b", "0.0.0.0:443", "forwarder:app"]
+CMD ["./entrypoint.sh"]
