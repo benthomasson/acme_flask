@@ -10,7 +10,7 @@ QUEUE_NAME = os.environ['QUEUE_NAME']
 FORWARDER_NAME = os.environ['FORWARDER_NAME']
 
 
-@app.route('/<endpoint>', methods=['POST'])
+@app.route('/<endpoint>', methods=['POST', 'PUT', 'DELETE', 'PATCH'])
 def webhook(endpoint):
     print(json.dumps(request.json))
 
