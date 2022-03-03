@@ -22,7 +22,7 @@ def webhook(endpoint):
         with sender:
             message = ServiceBusMessage(json.dumps(dict(payload=request.json,
                                                         meta=dict(endpoint=endpoint,
-                                                                  headers=request.headers,
+                                                                  headers=dict(request.headers),
                                                                   forwarder=FORWARDER_NAME))))
             sender.send_messages(message)
 
