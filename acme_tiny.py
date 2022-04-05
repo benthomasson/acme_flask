@@ -30,12 +30,17 @@ def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA, disable_check
 
     # helper function - make request and automatically parse json response
     def _do_request(url, data=None, err_msg="Error", depth=0):
+        log.info(f'_do_request {url}')
         try:
             resp = urlopen(Request(url, data=data, headers={"Content-Type": "application/jose+json", "User-Agent": "acme-tiny"}))
             resp_data, code, headers = resp.read().decode("utf8"), resp.getcode(), resp.headers
+            log.info(f'code {code}')
+            log.info(f'resp_data {resp_data}')
         except IOError as e:
             resp_data = e.read().decode("utf8") if hasattr(e, "read") else str(e)
             code, headers = getattr(e, "code", None), {}
+            log.info(f'code {code}')
+            log.info(f'resp_data {resp_data}')
         try:
             resp_data = json.loads(resp_data) # try to parse json results
         except ValueError:
@@ -63,6 +68,7 @@ def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA, disable_check
 
     # helper function - poll until complete
     def _poll_until_not(url, pending_statuses, err_msg):
+        log.info(f'polling {url}')
         result, t0 = None, time.time()
         while result is None or result['status'] in pending_statuses:
             assert (time.time() - t0 < 3600), "Polling timeout" # 1 hour timeout
@@ -139,16 +145,24 @@ def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA, disable_check
         with open(wellknown_path, "w") as wellknown_file:
             wellknown_file.write(keyauthorization)
 
+        log.info("Wrote {0}...".format(wellknown_path))
+
         # check that the file is in place
         try:
             wellknown_url = "http://{0}{1}/.well-known/acme-challenge/{2}".format(domain, "" if check_port is None else ":{0}".format(check_port), token)
+            log.info("Check url {0}...".format(wellknown_url))
             assert (disable_check or _do_request(wellknown_url)[0] == keyauthorization)
+            log.info("Check url succeeded")
         except (AssertionError, ValueError) as e:
+            log.info("Check failed succeeded")
             raise ValueError("Wrote file to {0}, but couldn't download {1}: {2}".format(wellknown_path, wellknown_url, e))
 
         # say the challenge is done
+        log.info(f"Send request {challenge['url']}")
         _send_signed_request(challenge['url'], {}, "Error submitting challenges: {0}".format(domain))
+        log.info(f"Polling auth_url {auth_url}")
         authorization = _poll_until_not(auth_url, ["pending"], "Error checking challenge status for {0}".format(domain))
+        log.info(f"authorization status {authorization['status']}")
         if authorization['status'] != "valid":
             raise ValueError("Challenge did not pass for {0}: {1}".format(domain, authorization))
         os.remove(wellknown_path)
