@@ -6,7 +6,6 @@ COPY forwarder.py /opt/app-root/src/
 COPY acme_tiny.py /opt/app-root/src/
 COPY acme_flask.py /opt/app-root/src/
 COPY entrypoint.sh /opt/app-root/src/
-COPY run_acme.sh /opt/app-root/src/
 RUN mkdir challenges
 RUN mkdir acme
 RUN mkdir server
