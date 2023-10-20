@@ -1,6 +1,6 @@
 
 # Acme Flask
 
-Builds upon [Acme Tiny](github.com/diafygi/acme-tiny) to request a certificate from Let's Encrypt.
+Builds upon [Acme Tiny](https://github.com/diafygi/acme-tiny) to request a certificate from Let's Encrypt.
 
 
