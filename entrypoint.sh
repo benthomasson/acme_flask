@@ -5,7 +5,7 @@ openssl genrsa 4096 > account.key
 openssl req -new -sha256 -key server/server.key -subj "/CN=${FQDN}" > domain.csr
 ./acme_flask.py
 
-gunicorn -w 4 -b 0.0.0.0:443 --certfile=acme/server.crt --keyfile=server/server.key forwarder:app
+gunicorn -w 4 -b 0.0.0.0:443 --certfile=acme/server.crt --keyfile=server/server.key hello:app
 
 while :; do sleep 2073600; done
 
