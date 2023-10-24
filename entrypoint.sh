@@ -1,6 +1,5 @@
 #!/bin/bash
 
-FQDN=example.com
 mkdir -p server acme challenges
 openssl genrsa 4096 > server/server.key
 openssl genrsa 4096 > account.key
