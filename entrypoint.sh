@@ -1,5 +1,7 @@
 #!/bin/bash
 
+FQDN=example.com
+mkdir -p server acme challenges
 openssl genrsa 4096 > server/server.key
 openssl genrsa 4096 > account.key
 openssl req -new -sha256 -key server/server.key -subj "/CN=${FQDN}" > domain.csr
